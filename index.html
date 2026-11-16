@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metrics Arena · Business and Design Metrics</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg1:#f5f0e8; --bg2:#eee8da; --ink:#1a1a1a; --paper:#fffdf8; --card:#faf6ef;
+  --line:#e0dacd; --line2:#c9c0ae; --muted:#888; --blue:#2563EB; --green:#1d9d55; --red:#d00;
+}
+html,body{min-height:100%;}
+body{background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.hidden{display:none !important;}
+.wrap{max-width:720px;margin:0 auto;padding:24px 20px 96px;}
+h1,h2,h3{font-weight:800;letter-spacing:-.01em;text-wrap:balance;}
+a{color:var(--blue);}
+.muted{color:var(--muted);}
+
+/* cards + buttons */
+.card{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);
+  padding:20px 22px;margin-bottom:16px;}
+.card h3{font-size:.82rem;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:12px;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+.primary{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.95rem;letter-spacing:.03em;
+  background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:13px 26px;
+  box-shadow:3px 3px 0 var(--ink);}
+.primary:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+.primary:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+.primary:disabled{opacity:.4;cursor:default;box-shadow:3px 3px 0 var(--ink);transform:none;}
+.ghost{background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:10px;font-weight:700;
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;padding:9px 16px;box-shadow:2px 2px 0 var(--ink);}
+.ghost:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);}
+.small{background:#fff;color:var(--ink);border:2px solid #555;border-radius:10px;font-weight:600;font-size:.7rem;
+  letter-spacing:.04em;padding:6px 12px;box-shadow:1px 1px 0 #ccc5b8;}
+.small:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:2px 2px 0 #ccc5b8;}
+.small:disabled{opacity:.35;cursor:not-allowed;}
+.center{text-align:center;}
+.link{color:var(--blue);cursor:pointer;text-decoration:underline;font-size:.82rem;}
+
+/* intro */
+.hero{text-align:center;padding:14px 0 4px;}
+.hero .the{font-family:'IBM Plex Mono',monospace;color:var(--line2);letter-spacing:.14em;font-size:.8rem;text-transform:uppercase;}
+.hero h1{font-size:clamp(2.2rem,8vw,3.4rem);margin:4px 0 6px;}
+.hero h1 .hl{background:linear-gradient(transparent 55%,#fde68a 55%);padding:0 .1em;}
+.badge{display:inline-block;background:#fde68a;border:2px solid #d4a800;border-radius:30px;
+  padding:5px 16px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.06em;color:#7c6600;}
+.lede{font-size:1.1rem;color:#3a3a3a;max-width:34ch;margin:16px auto 0;text-wrap:pretty;}
+.lede b{color:var(--ink);}
+.rules-list{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.rules-list li{display:flex;gap:11px;align-items:flex-start;font-size:.98rem;line-height:1.4;}
+.rules-list .ic{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);box-shadow:1.5px 1.5px 0 var(--ink);}
+.rules-list b{color:var(--ink);}
+
+/* forms */
+label.fl{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:#666;font-weight:700;margin:14px 0 6px;}
+input[type=text],input[type=email],textarea{width:100%;font-family:'Inter',sans-serif;font-size:1rem;
+  background:#fff;border:2px solid var(--line2);border-radius:10px;padding:11px 13px;color:var(--ink);}
+input:focus,textarea:focus{outline:none;border-color:var(--blue);}
+textarea{resize:vertical;min-height:70px;}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.9rem;cursor:pointer;}
+.consent input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--blue);}
+.err{color:var(--red);font-size:.85rem;font-weight:600;margin-top:10px;display:none;}
+.slider{width:100%;accent-color:var(--blue);}
+
+/* status bar */
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;
+  font-weight:700;font-size:.82rem;padding:11px 0;border-bottom:2px solid #555;margin-bottom:16px;flex-wrap:wrap;}
+.rbadge{color:var(--blue);letter-spacing:.06em;}
+.bank{color:var(--ink);}
+
+/* the round: brief, rules, step headers */
+.q-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--blue);margin-bottom:6px;}
+.q-text{font-size:1.12rem;font-weight:800;line-height:1.45;}
+.why-text{font-size:.92rem;line-height:1.65;color:#333;margin-top:6px;}
+.check-note{font-size:.8rem;color:#666;margin-bottom:10px;line-height:1.5;}
+.check-note b{color:var(--ink);}
+.steph{display:flex;align-items:center;margin-bottom:12px;}
+.steph h3{margin:0;}
+.stepn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+  background:var(--blue);color:#fff;border:2px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-weight:700;
+  font-size:.8rem;margin-right:10px;box-shadow:2px 2px 0 var(--ink);}
+.stepn.done{background:var(--green);}
+details.rules{border:1.5px dashed var(--line2);border-radius:10px;padding:10px 14px;margin-bottom:16px;background:var(--card);}
+details.rules summary{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--blue);cursor:pointer;}
+.intro-rules{text-align:left;margin:10px 0 0;}
+.intro-rules li{font-size:.88rem;line-height:1.7;color:#444;margin-bottom:8px;list-style:none;padding-left:26px;position:relative;}
+.intro-rules li:last-child{margin-bottom:0;}
+.intro-rules li::before{content:"→";position:absolute;left:0;color:var(--blue);font-weight:700;}
+.rules-order{font-size:.86rem;line-height:1.6;color:#444;margin:12px 0 0;padding-top:10px;border-top:1.5px dashed var(--line2);}
+.rules-order b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+  background:var(--blue);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.7rem;margin:0 2px 0 4px;}
+.rules-go{text-align:center;margin-top:16px;}
+#rb:not(.rules-first) .rules-go{display:none;}
+/* the first round: only the rules are lit, the round waits greyed out until the player presses GOT IT */
+#rb.rules-first details.rules{border:2.5px solid var(--blue);background:#fff;box-shadow:4px 4px 0 var(--blue);padding:18px 20px;}
+#rb.rules-first details.rules summary{font-size:.86rem;pointer-events:none;list-style:none;}
+#rb.rules-first details.rules summary::-webkit-details-marker{display:none;}
+#rb.rules-first details.rules summary::before{content:"READ THIS FIRST · ";color:var(--ink);}
+#rb.rules-first .round-cols{opacity:.2;filter:grayscale(1);pointer-events:none;user-select:none;}
+
+/* question choices + problem cards */
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.choice{border:2px solid #444;border-radius:12px;padding:14px;background:#fff;cursor:pointer;box-shadow:3px 3px 0 #ccc5b8;transition:all .15s;}
+.choice:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 #ccc5b8;}
+.choice.on{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:3px 3px 0 var(--blue);}
+.choice.used{opacity:.45;pointer-events:none;}
+.choice.used.on{opacity:1;}
+.choice .c-tag{font-size:.7rem;letter-spacing:.1em;font-weight:800;color:var(--blue);margin-bottom:6px;}
+.choice.on .c-tag{color:#93c5fd;}
+.choice .c-name{font-weight:800;font-size:.92rem;line-height:1.3;margin-bottom:6px;}
+.choice .c-how{font-size:.78rem;line-height:1.45;opacity:.8;}
+/* the three questions look askable, not like the three problems below them */
+.choices.ask .choice{border:2px dashed var(--blue);background:#f5f9ff;box-shadow:none;}
+.choices.ask .choice.on{border-style:solid;border-color:var(--ink);background:var(--ink);box-shadow:3px 3px 0 var(--blue);}
+.check-note.answer{background:#fff8dc;border:2px solid #d4a800;border-radius:10px;padding:10px 12px;color:var(--ink);font-size:.9rem;}
+/* the answer to the one question: green when that part is fine, red when it is below normal */
+.check-note.answer.good{background:#f2fbf5;border-color:var(--green);}
+.check-note.answer.bad{background:#fff2f0;border-color:var(--red);}
+.ans-tag{display:block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:.08em;margin-bottom:4px;}
+.answer.good .ans-tag{color:#14753f;} .answer.bad .ans-tag{color:#c00;}
+.chipbar{display:flex;height:22px;border:2px solid #444;border-radius:11px;overflow:hidden;background:var(--bg2);margin-bottom:8px;}
+.seg{height:100%;width:0;transition:width .15s;}
+.chips-left{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;text-align:center;margin-bottom:14px;color:#555;}
+.chips-left.full{color:var(--green);}
+.chips-left .link{margin-left:10px;font-size:.74rem;}
+.layer{border:2px solid #444;border-radius:12px;padding:14px;background:#fff;box-shadow:3px 3px 0 #ccc5b8;display:flex;flex-direction:column;min-width:0;}
+.layer .c-tag{font-size:.7rem;letter-spacing:.1em;font-weight:800;margin-bottom:6px;}
+.layer .c-name{font-weight:800;font-size:.92rem;line-height:1.3;margin-bottom:4px;}
+.layer .c-how{font-size:.76rem;line-height:1.45;color:#666;margin-bottom:10px;flex:1;}
+.layer .chips{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:800;text-align:center;margin:4px 0;}
+.layer .ctrl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;}
+.layer .ctrl button{padding:7px 0;font-size:.68rem;min-width:0;}
+.layer .allin{margin-top:8px;width:100%;padding:6px 7px;font-size:.68rem;border-style:dashed;}
+.lock-row{text-align:center;margin-top:20px;}
+.nudge{display:none;max-width:52ch;margin:0 auto 14px;padding:10px 14px;border-radius:10px;background:#fff8dc;border:2px solid #d4a800;
+  font-size:.86rem;line-height:1.5;text-align:left;}
+
+/* result */
+.big-num{font-size:2.3rem;font-weight:800;margin:6px 0 2px;font-family:'IBM Plex Mono',monospace;}
+.big-num.plus,.amt.plus,.hist-rev.plus{color:var(--green);} .big-num.zero,.amt.zero,.hist-rev.zero{color:var(--red);}
+.decision{margin-top:12px;padding:12px 14px;border-radius:10px;background:#eff6ff;border:2px solid var(--blue);font-size:.88rem;line-height:1.55;color:#1e3a8a;}
+.decision b{font-size:.72rem;letter-spacing:.1em;display:block;margin-bottom:4px;color:var(--blue);}
+.answer-line{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;margin-top:10px;color:var(--ink);}
+.strip{display:flex;height:20px;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;background:#f3efe6;min-width:0;}
+.strip div{font-size:.72rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;container-type:inline-size;}
+.strip .none{background:#e6e1d6;color:#555;font-weight:600;}
+.strip .hit{box-shadow:inset 0 0 0 2px var(--ink);}
+.strip i{font-style:normal;margin-right:3px;}
+@container (max-width: 19px){ .strip div span{display:none;} }
+@container (max-width: 36px){ .strip div i{display:none;} }
+.rm-row{display:grid;grid-template-columns:160px 1fr 80px;gap:12px;align-items:center;padding:9px 8px;border-bottom:1px solid #eae5da;font-size:.84rem;}
+.rm-row:last-child{border-bottom:none;} .rm-row.you{background:#fff8dc;border-radius:8px;}
+.rm-row .n{font-weight:800;min-width:0;overflow-wrap:anywhere;} .rm-row .n small{display:block;color:#666;font-weight:400;font-size:.72rem;}
+.rm-row .amt{font-family:'IBM Plex Mono',monospace;font-weight:800;text-align:right;}
+.key{display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:#666;margin-top:10px;}
+.key span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;border:1px solid var(--ink);margin-right:5px;vertical-align:middle;background:var(--c);}
+.key span.r{font-weight:800;color:var(--ink);}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;line-height:1.55;padding:8px 0;border-bottom:1px solid #eae5da;}
+.check:last-child{border-bottom:none;}
+.check .ic{font-family:'IBM Plex Mono',monospace;font-weight:800;width:18px;flex:none;}
+.check .ic.ok{color:var(--green);} .check .ic.hot{color:var(--red);}
+.check b{font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+
+/* P&L ladder */
+.ld{margin-top:6px;}
+.ld .big{display:grid;grid-template-columns:1fr auto 128px;gap:12px;align-items:center;padding:8px 0;}
+.ld .big .l{font-weight:800;font-size:1rem;} .ld .big .l small{display:block;font-weight:400;color:#666;font-size:.7rem;line-height:1.4;}
+.ld .big .l small b{font-family:'IBM Plex Mono',monospace;color:#555;}
+.ld .big .v{font-family:'IBM Plex Mono',monospace;font-size:1.6rem;font-weight:800;white-space:nowrap;} .ld .big .v.neg{color:var(--red);}
+.ld .big .m,.fn .m{font-family:'IBM Plex Mono',monospace;font-size:.86rem;font-weight:700;text-align:right;color:#666;line-height:1.5;}
+.ld .big .m.hot,.fn .m.hot{color:var(--red);} .ld .big .m.ok,.fn .m.ok{color:var(--green);}
+.m .ind{display:inline-block;background:#fde68a;border-radius:6px;padding:2px 7px;font-size:.72rem;color:#444;}
+.ind .nw{white-space:nowrap;}
+.ld .rung{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:#666;padding:3px 0 3px 18px;border-left:2px solid var(--line);margin-left:8px;}
+.ld .rung b{color:var(--red);font-weight:700;} .ld .rung b.plus{color:var(--green);}
+
+/* funnel */
+.fn{display:grid;grid-template-columns:150px 1fr 128px;gap:0 14px;align-items:center;margin-top:8px;}
+.fn .l{font-weight:800;font-size:.95rem;line-height:1.2;} .fn .l small{display:block;font-weight:400;color:#666;font-size:.68rem;margin-top:2px;}
+.fn .stage{height:40px;min-width:max-content;padding:0 7px;margin:0 auto;background:var(--ink);color:#fff;border:2px solid var(--ink);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:800;font-size:1.1rem;white-space:nowrap;}
+.fn .stage.last{background:var(--green);}
+.fn .conn{position:relative;height:34px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:#9b0000;white-space:nowrap;}
+.fn .conn i{position:absolute;inset:0;background:#fde4e1;}
+.fn .conn span{position:relative;}
+.fn .conn b{color:var(--red);margin:0 4px;}
+.fn .blank{height:34px;}
+
+/* definitions tooltip */
+.def{border-bottom:1.5px dotted var(--blue);cursor:help;}
+#tip{position:fixed;z-index:70;max-width:320px;background:var(--ink);color:#fff;font-size:.78rem;line-height:1.55;padding:10px 12px;
+  border-radius:8px;box-shadow:3px 3px 0 #ccc5b8;pointer-events:none;display:none;}
+#tip b{display:block;font-size:.7rem;letter-spacing:.1em;color:#fde68a;margin-bottom:3px;}
+
+/* part two: what a P&L looks like, next to the funnel */
+.part-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px 28px;align-items:start;text-align:left;margin-bottom:8px;}
+.part-cols .intro-rules{margin:0;}
+.part-pic{border:2px solid #444;border-radius:12px;background:var(--card);padding:14px 16px;min-width:0;}
+.pp-h{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--blue);}
+.pp-s{font-size:.8rem;color:#444;margin:2px 0 8px;line-height:1.45;}
+.pp-fn{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:14px;padding-bottom:14px;border-bottom:1.5px dashed var(--line2);}
+.pp-fn i{font-style:normal;background:var(--ink);color:#fff;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:.7rem;padding:4px 8px;text-align:center;white-space:nowrap;min-width:max-content;}
+.pp-fn i:last-child{background:var(--green);}
+.pp-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;padding:4px 0;}
+.pp-row .l{font-weight:800;font-size:.88rem;} .pp-row .l small{display:block;font-weight:400;color:#666;font-size:.72rem;line-height:1.4;}
+.pp-row .v{font-family:'IBM Plex Mono',monospace;font-weight:800;font-size:1.1rem;white-space:nowrap;}
+.pp-rung{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:#666;padding:3px 0 3px 14px;border-left:2px solid var(--line);margin-left:6px;}
+.pp-rung b{color:var(--red);}
+.pp-cap{font-size:.76rem;color:#555;margin-top:10px;line-height:1.5;}
+
+/* final + debrief */
+.bignum{text-align:center;}
+.bignum .n{font-family:'IBM Plex Mono',monospace;font-weight:800;font-size:3rem;color:var(--blue);line-height:1;}
+.bignum .l{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-top:6px;}
+.board-scroll{overflow-x:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
+table.board th{font-size:.66rem;letter-spacing:.08em;color:#666;text-align:left;padding:6px 8px;border-bottom:2px solid #555;}
+table.board td{padding:9px 8px;border-bottom:1px solid #eae5da;}
+table.board tr:last-child td{border-bottom:none;}
+table.board td.num{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+table.board td small{display:block;color:#666;font-weight:400;font-size:.72rem;}
+table.board tr.you td{background:#fff8dc;font-weight:700;}
+.history-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eae5da;font-size:.82rem;}
+.history-row:last-child{border-bottom:none;}
+.hist-round{font-weight:800;width:30px;color:#666;flex:none;}
+.hist-model{flex:1;line-height:1.5;min-width:0;} .hist-model small{color:#666;font-family:'IBM Plex Mono',monospace;}
+.hist-rev{font-family:'IBM Plex Mono',monospace;font-weight:700;white-space:nowrap;}
+.insight{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:16px 18px;margin-bottom:12px;position:relative;box-shadow:3px 3px 0 var(--ink);}
+.insight:last-child{margin-bottom:0;}
+.insight .num{position:absolute;top:-12px;left:16px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;
+  font-family:'IBM Plex Mono',monospace;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);font-size:.85rem;}
+.insight p{font-size:.95rem;line-height:1.45;margin-top:4px;}
+.success-tick{font-size:3rem;text-align:center;}
+
+@media (max-width:640px){
+  .choices{grid-template-columns:1fr;}
+  .layer .ctrl{gap:6px;} .layer .ctrl button{padding:11px 0;font-size:.8rem;}
+  .layer .allin{padding:10px 7px;font-size:.76rem;margin-top:10px;}
+}
+@media (max-width:600px){
+  .card{padding:18px 16px;}
+  .rm-row{grid-template-columns:96px 1fr 64px;gap:8px;}
+  .ld .big{grid-template-columns:1fr auto 76px;gap:8px;} .ld .big .l{font-size:.92rem;} .ld .big .v{font-size:1.05rem;}
+  .fn{grid-template-columns:90px 1fr 80px;gap:0 8px;} .fn .stage{font-size:.9rem;} .fn .conn{font-size:.62rem;}
+  table.board .opt{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ REGISTER / INTRO ============ -->
+<div id="screen-register" class="wrap">
+  <div class="hero">
+    <div class="the">the</div>
+    <h1><span class="hl">METRICS ARENA</span></h1>
+    <div class="badge">BUSINESS AND DESIGN METRICS · d.MBA</div>
+    <div class="lede">🩺 Eight companies, each with a problem. Read the numbers, ask one question, <b>bet on what is really wrong</b>.</div>
+  </div>
+
+  <div class="card" style="margin-top:22px;">
+    <h3>How it works</h3>
+    <ul class="rules-list">
+      <li><span class="ic">1</span><span>Eight companies come to you for help. <b>Three things could be wrong</b> with each one, and one of them really is.</span></li>
+      <li><span class="ic">2</span><span>First you <b>read the numbers</b>. Four rounds show a funnel (people moving through steps). Four show a P&amp;L (where the money goes).</span></li>
+      <li><span class="ic">3</span><span>You get <b>one free question</b> per round. It shows what is normal for that kind of company, for one number.</span></li>
+      <li><span class="ic">4</span><span>Then you <b>bet 100 chips</b> on what is wrong. Sure? Go all in. Not sure? Split them.</span></li>
+      <li><span class="ic">5</span><span>All 100 chips on the real problem scores <b>100 points</b>. The best possible score is <b>800</b>.</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Start</h3>
+    <label class="fl" for="reg-name">Your name</label>
+    <input type="text" id="reg-name" placeholder="Alex Rivera" maxlength="60" autocomplete="name">
+    <label class="fl" for="reg-email">Your email</label>
+    <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+    <label class="consent"><input type="checkbox" id="reg-consent"><span>I'm happy for my results to be emailed to me and the d.MBA team.</span></label>
+    <div class="err" id="reg-error">Please enter your name, a valid email, and tick the box.</div>
+    <div class="center" style="margin-top:18px;"><button class="primary" onclick="submitRegistration()">Start playing →</button></div>
+  </div>
+</div>
+
+<!-- ============ ROUND ============ -->
+<div id="screen-round" class="wrap hidden">
+  <div id="round-body"></div>
+</div>
+
+<!-- ============ RESULT ============ -->
+<div id="screen-result" class="wrap hidden">
+  <div id="result-body"></div>
+</div>
+
+<!-- ============ PART TWO ============ -->
+<div id="screen-part" class="wrap hidden">
+  <div id="part-body"></div>
+</div>
+
+<!-- ============ FINAL ============ -->
+<div id="screen-final" class="wrap hidden">
+  <div id="final-body"></div>
+</div>
+
+<!-- ============ REFLECT ============ -->
+<div id="screen-reflect" class="wrap hidden">
+  <div class="hero"><h1 style="font-size:2rem;">Nearly done 🙌</h1>
+    <div class="lede">A few quick reflections, then we'll email your results.</div></div>
+  <div class="card" style="margin-top:20px;">
+    <h3>Reflect</h3>
+    <label class="fl" for="ref-confidence">How confident are you reading a company's numbers now? (<span id="ref-conf-val">6</span>/10)</label>
+    <input type="range" class="slider" id="ref-confidence" min="1" max="10" value="6" oninput="document.getElementById('ref-conf-val').textContent=this.value">
+    <label class="fl" for="ref-takeaway">Your biggest takeaway</label>
+    <textarea id="ref-takeaway" placeholder="What clicked for you?"></textarea>
+    <label class="fl" for="ref-application">Where could you use this at work?</label>
+    <textarea id="ref-application" placeholder="A funnel or a P&amp;L you could read this way…"></textarea>
+    <label class="fl" for="ref-surprise">What surprised you?</label>
+    <textarea id="ref-surprise" placeholder="A problem you bet on that turned out to be healthy…"></textarea>
+    <label class="fl" for="ref-other">Anything else? (optional)</label>
+    <textarea id="ref-other" placeholder="Optional"></textarea>
+    <div class="err" id="ref-error">Please fill the three questions above.</div>
+    <div class="center" style="margin-top:18px;"><button class="primary" id="ref-submit-btn" onclick="submitReflection()">Send my results →</button></div>
+  </div>
+</div>
+
+<!-- ============ SUCCESS ============ -->
+<div id="screen-success" class="wrap hidden">
+  <div class="hero" style="padding-top:40px;">
+    <div class="success-tick">✅</div>
+    <h1 style="font-size:2rem;margin-top:10px;">All done!</h1>
+    <div class="lede">Your results are on their way to <b id="ref-confirm-email"></b>. Thanks for playing.</div>
+    <div class="center" style="margin-top:24px;"><button class="ghost" onclick="playAgain()">↻ Play again</button></div>
+  </div>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+const GAME_NAME = 'Metrics Arena — Business and Design Metrics';
+
+// ===================== GAME DATA =====================
+// Rounds, normal ranges, answers and point values, exported from the multiplayer
+// game's engine (metrics-arena: game_data.py + scoring.py). Regenerate the block
+// rather than editing it by hand, so the solo and class versions cannot drift.
+const DATA = /*DATA:BEGIN*/{"game":{"name":"Metrics Arena","emoji":"🏟️","module":"Business and Design Metrics","tagline":"Eight companies with a problem. Read the numbers, ask one question, bet on what is really wrong."},"defs":{"revenue":["REVENUE","Money the company earned by selling its products or services."],"gross":["GROSS PROFIT","Revenue minus cost of goods sold (raw materials, the people who make the product, hosting, packaging)."],"op":["OPERATING PROFIT","Gross profit minus operating expenses (OPEX): sales, marketing, rent, admin, R&D."],"net":["NET PROFIT","Revenue minus all costs, including taxes."],"band":["NORMAL RANGE","What is normal for this kind of company. Also called the industry band or the benchmark. Below it means something is broken. Inside or above it is fine."],"margin":["MARGIN","A profit as a share of revenue. Gross margin is gross profit divided by revenue. Operating margin is operating profit divided by revenue."],"rate":["STEP RATE","The share of people at one step who make it to the next. Compare this % with what is normal, not the number of people who leave. The most people usually leave at the first step, and that is often normal."]},"rules":{"funnel":["<b>Think like a doctor.<\/b> The company is the patient. Three things could be wrong with it, and one of them really is. Your job is to work out which one.","<b>The funnel<\/b> shows people moving through steps. The % next to a step is the share of people who got there from the step before. Some people always leave. That alone does not mean a step is broken.","A step is broken when its % is below the <b>normal range<\/b> for that kind of company (also called the industry band). You cannot see the normal ranges.","A doctor runs a test. You get <b>one question<\/b> per round: pick one step and see its normal range. Below normal? You found the problem. Normal? That step is healthy, so the problem is one of the other two.","Then bet your 100 chips on what you think is wrong. Sure? Go all in. Not sure? Split them. Chips on the real problem pay the most. Chips on a healthy step pay much less, because fixing something that works barely helps."],"pl":["Same job, new chart. Read it from the top. <b>Revenue<\/b> is the money that came in. Take away the cost of goods (what it costs to make the product) and you get <b>gross profit<\/b>: is the product making money? Take away operating expenses, or OPEX (what it costs to run the company) and you get <b>operating profit<\/b>: is the whole company making money?","A <b>margin<\/b> is a profit as a share of revenue. Each kind of company has a <b>normal range<\/b> for it (also called the industry band).","Three things could be wrong, and one of them really is. <b>Price<\/b>: gross margin is below normal and we charge less than the market. <b>Cost of goods<\/b>: gross margin is below normal and we charge what the market charges, so the product costs too much to make. <b>Company<\/b>: gross margin is normal but operating margin is below normal, so the company costs too much to run.","You get <b>one question<\/b> per round: the market price, or the normal range for one margin. Then bet your 100 chips on what you think is wrong."]},"part_two":{"kicker":"part two","title":"THE P&L","subtitle":"📒 THE FOUNDERS NOW OPEN THE BOOKS. SAME GAME, DIFFERENT STATEMENT."},"part_two_at":4,"debrief":["A number is only good or bad next to its industry. The same 3% is healthy for a B2B trial and fatal for an app store page; the same 24% gross margin is fine in grocery and fatal in software.","Counts tell you where the crowd is, rates tell you where the leak is. The biggest drop is almost always at the top, and almost always normal.","Read the margins in order: gross says product, operating says company. Spend the one question on the thing you cannot place, then let the chips say how sure you are."],"bots":[{"id":"fermi","name":"The Analysts","desc":"read first, then bet"},{"id":"gamblers","name":"The Gamblers","desc":"all in on the obvious"},{"id":"hedgers","name":"The Hedgers","desc":"a third each, always"}],"max_total":800,"bot_totals":{"fermi":688,"gamblers":327,"hedgers":376},"rounds":[{"index":0,"kind":"funnel","part_label":"PART ONE · THE FUNNEL 🪣","title":"🧘 Stillwater · Meditation apps","name":"Stillwater","emoji":"🧘","industry":"meditation apps","brief":"The founders of a meditation app came to you. 200,000 people land on the site every month and 192 end up paying. Where is the leak?","statement_title":"THE FUNNEL · A TYPICAL MONTH","statement":{"kind":"funnel","stages":[{"label":"Visitors","count":"200,000","w":100.0,"sub":"a month"},{"label":"Signups","count":"16,000","w":72.7,"id":"top","sub":"signup rate","rate":"8%","leave":"184,000"},{"label":"Finished the first session","count":"4,800","w":59.68,"id":"mid","sub":"first session rate","rate":"30%","leave":"11,200"},{"label":"Paid","count":"192","w":24.89,"id":"bot","sub":"paid rate","rate":"4%","leave":"4,608"}]},"questions":[{"id":"top","tag":"ASK AN ANALYST","name":"Is our signup rate normal?","how":"Visitors → signups. Shows the normal range for meditation apps next to ours."},{"id":"mid","tag":"ASK AN ANALYST","name":"Is our first session rate normal?","how":"Signups → finished the first session. Shows the normal range for meditation apps next to ours."},{"id":"bot","tag":"ASK AN ANALYST","name":"Is our paid rate normal?","how":"Finished the first session → paid. Shows the normal range for meditation apps next to ours."}],"layers":[{"id":"top","color":"#2563EB","tag":"STEP 1 · SIGNUP RATE","name":"Landing page problem","short":"landing page","how":"Visitors don't sign up. The fix: redesign the landing page."},{"id":"mid","color":"#f59e0b","tag":"STEP 2 · FIRST SESSION RATE","name":"Onboarding problem","short":"onboarding","how":"Signups never finish a first session. The fix: redesign the onboarding."},{"id":"bot","color":"#1d9d55","tag":"STEP 3 · PAID RATE","name":"Paywall problem","short":"paywall","how":"Users don't pay. The fix: redesign the paywall."}],"asks":{"top":{"id":"top","label":"signup rate","text":"<b>Ours: 8%. Normal for meditation apps: 6%–10%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the first session rate or the paid rate.","marks":{"top":{"kind":"band","band":"6%–10%","hot":false}}},"mid":{"id":"mid","label":"first session rate","text":"<b>Ours: 30%. Normal for meditation apps: 40%–60%.<\/b> We are below normal. This step is broken, so this is the real problem.","marks":{"mid":{"kind":"band","band":"40%–60%","hot":true}}},"bot":{"id":"bot","label":"paid rate","text":"<b>Ours: 4%. Normal for meditation apps: 3%–6%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the signup rate or the first session rate.","marks":{"bot":{"kind":"band","band":"3%–6%","hot":false}}}},"reveal":{"right":"mid","right_name":"Onboarding problem","right_color":"#f59e0b","room_title":"THE CLASS · ANSWER: ONBOARDING","answer":"THE REAL PROBLEM: ONBOARDING · FIXING IT IS WORTH +€92,000 A YEAR","all_in":"+100","key":[{"id":"top","color":"#2563EB","name":"landing page","worth":"+€14,000","units":"+15","right":false},{"id":"mid","color":"#f59e0b","name":"onboarding","worth":"+€92,000","units":"+100","right":true},{"id":"bot","color":"#1d9d55","name":"paywall","worth":"+€14,000","units":"+15","right":false}],"checks":[{"ok":true,"html":"Visitors → signups: <b>8%<\/b>, in the normal range of 6%–10%. 184,000 people leave here, which is normal."},{"ok":false,"html":"Signups → finished the first session: <b>30%<\/b>, below the normal range of 40%–60%. 11,200 people leave here, and that is too many."},{"ok":true,"html":"Finished the first session → paid: <b>4%<\/b>, in the normal range of 3%–6%. 4,608 people leave here, which is normal."},{"ok":null,"html":"Redesign the onboarding: first session rate <b>30% → 50%<\/b>. Paid <b>192 → 320<\/b> a month, worth <b>+€92,000<\/b> a year at €60 each."}],"why":"Signup rate 8% and paid rate 4% are both in their normal range. Only 30% of signups ever finish a first session, against 40 to 60. The leak is onboarding: the biggest number of people leave at the top, but that is normal for the category. The step that is broken is the one in the middle.","decision":"","marks":{"top":{"kind":"band","band":"6%–10%","hot":false},"mid":{"kind":"band","band":"40%–60%","hot":true},"bot":{"kind":"band","band":"3%–6%","hot":false}}},"units":{"top":15.000000000000014,"mid":100.0,"bot":15.000000000000014},"bots":{"fermi":{"top":20,"mid":80,"bot":0},"gamblers":{"top":100,"mid":0,"bot":0},"hedgers":{"top":34,"mid":33,"bot":33}}},{"index":1,"kind":"funnel","part_label":"PART ONE · THE FUNNEL 🪣","title":"👟 Kicks · E-commerce","name":"Kicks","emoji":"👟","industry":"e-commerce","brief":"A sneaker shop came to you. 400,000 visitors a month, 4,500 orders. The checkout was just rebuilt and the team wants to rebuild it again.","statement_title":"THE FUNNEL · A TYPICAL MONTH","statement":{"kind":"funnel","stages":[{"label":"Visitors","count":"400,000","w":100.0,"sub":"a month"},{"label":"Viewed a product","count":"100,000","w":79.58,"id":"top","sub":"product view rate","rate":"25%","leave":"300,000"},{"label":"Added to cart","count":"15,000","w":51.64,"id":"mid","sub":"add to cart rate","rate":"15%","leave":"85,000"},{"label":"Bought","count":"4,500","w":33.91,"id":"bot","sub":"purchase rate","rate":"30%","leave":"10,500"}]},"questions":[{"id":"top","tag":"ASK AN ANALYST","name":"Is our product view rate normal?","how":"Visitors → viewed a product. Shows the normal range for e-commerce next to ours."},{"id":"mid","tag":"ASK AN ANALYST","name":"Is our add to cart rate normal?","how":"Viewed a product → added to cart. Shows the normal range for e-commerce next to ours."},{"id":"bot","tag":"ASK AN ANALYST","name":"Is our purchase rate normal?","how":"Added to cart → bought. Shows the normal range for e-commerce next to ours."}],"layers":[{"id":"top","color":"#2563EB","tag":"STEP 1 · PRODUCT VIEW RATE","name":"Home and category pages problem","short":"home and category pages","how":"Visitors never reach a product. The fix: redesign the home and category pages."},{"id":"mid","color":"#f59e0b","tag":"STEP 2 · ADD TO CART RATE","name":"Product page problem","short":"product page","how":"Viewers don't add to cart. The fix: redesign the product page."},{"id":"bot","color":"#1d9d55","tag":"STEP 3 · PURCHASE RATE","name":"Checkout problem","short":"checkout","how":"Carts don't convert. The fix: redesign the checkout."}],"asks":{"top":{"id":"top","label":"product view rate","text":"<b>Ours: 25%. Normal for e-commerce: 40%–60%.<\/b> We are below normal. This step is broken, so this is the real problem.","marks":{"top":{"kind":"band","band":"40%–60%","hot":true}}},"mid":{"id":"mid","label":"add to cart rate","text":"<b>Ours: 15%. Normal for e-commerce: 10%–20%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the product view rate or the purchase rate.","marks":{"mid":{"kind":"band","band":"10%–20%","hot":false}}},"bot":{"id":"bot","label":"purchase rate","text":"<b>Ours: 30%. Normal for e-commerce: 20%–35%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the product view rate or the add to cart rate.","marks":{"bot":{"kind":"band","band":"20%–35%","hot":false}}}},"reveal":{"right":"top","right_name":"Home and category pages problem","right_color":"#2563EB","room_title":"THE CLASS · ANSWER: HOME AND CATEGORY PAGES","answer":"THE REAL PROBLEM: HOME AND CATEGORY PAGES · FIXING IT IS WORTH +€4,860,000 A YEAR","all_in":"+100","key":[{"id":"top","color":"#2563EB","name":"home and category pages","worth":"+€4,860,000","units":"+100","right":true},{"id":"mid","color":"#f59e0b","name":"product page","worth":"+€486,000","units":"+10","right":false},{"id":"bot","color":"#1d9d55","name":"checkout","worth":"+€486,000","units":"+10","right":false}],"checks":[{"ok":false,"html":"Visitors → viewed a product: <b>25%<\/b>, below the normal range of 40%–60%. 300,000 people leave here, and that is too many."},{"ok":true,"html":"Viewed a product → added to cart: <b>15%<\/b>, in the normal range of 10%–20%. 85,000 people leave here, which is normal."},{"ok":true,"html":"Added to cart → bought: <b>30%<\/b>, in the normal range of 20%–35%. 10,500 people leave here, which is normal."},{"ok":null,"html":"Redesign the home and category pages: product view rate <b>25% → 50%<\/b>. Bought <b>4,500 → 9,000<\/b> a month, worth <b>+€4,860,000<\/b> a year at €90 each."}],"why":"Only a quarter of visitors ever see a product page, against 40 to 60. Add to cart at 15% and checkout at 30% are both healthy. The new checkout is fine. People are lost before they ever reach it, on the home and category pages.","decision":"","marks":{"top":{"kind":"band","band":"40%–60%","hot":true},"mid":{"kind":"band","band":"10%–20%","hot":false},"bot":{"kind":"band","band":"20%–35%","hot":false}}},"units":{"top":100.0,"mid":10.0,"bot":10.0},"bots":{"fermi":{"top":80,"mid":20,"bot":0},"gamblers":{"top":100,"mid":0,"bot":0},"hedgers":{"top":34,"mid":33,"bot":33}}},{"index":2,"kind":"funnel","part_label":"PART ONE · THE FUNNEL 🪣","title":"☁️ Tasker · B2B software","name":"Tasker","emoji":"☁️","industry":"B2B software","brief":"A project management tool asked you to look at its trial. 50,000 visitors a month, 30 new paying teams. The team is sure the landing page is the problem.","statement_title":"THE FUNNEL · A TYPICAL MONTH","statement":{"kind":"funnel","stages":[{"label":"Visitors","count":"50,000","w":100.0,"sub":"a month"},{"label":"Started a trial","count":"1,500","w":63.93,"id":"top","sub":"trial start rate","rate":"3%","leave":"48,500"},{"label":"Invited a teammate","count":"600","w":54.5,"id":"mid","sub":"invite rate","rate":"40%","leave":"900"},{"label":"Paid","count":"30","w":23.69,"id":"bot","sub":"paid rate","rate":"5%","leave":"570"}]},"questions":[{"id":"top","tag":"ASK AN ANALYST","name":"Is our trial start rate normal?","how":"Visitors → started a trial. Shows the normal range for B2B software next to ours."},{"id":"mid","tag":"ASK AN ANALYST","name":"Is our invite rate normal?","how":"Started a trial → invited a teammate. Shows the normal range for B2B software next to ours."},{"id":"bot","tag":"ASK AN ANALYST","name":"Is our paid rate normal?","how":"Invited a teammate → paid. Shows the normal range for B2B software next to ours."}],"layers":[{"id":"top","color":"#2563EB","tag":"STEP 1 · TRIAL START RATE","name":"Landing page problem","short":"landing page","how":"Visitors don't start a trial. The fix: redesign the landing page."},{"id":"mid","color":"#f59e0b","tag":"STEP 2 · INVITE RATE","name":"Onboarding problem","short":"onboarding","how":"Trials never invite a teammate. The fix: redesign the onboarding."},{"id":"bot","color":"#1d9d55","tag":"STEP 3 · PAID RATE","name":"Pricing page problem","short":"pricing page","how":"Active trials don't pay. The fix: redesign the pricing page."}],"asks":{"top":{"id":"top","label":"trial start rate","text":"<b>Ours: 3%. Normal for B2B software: 2%–5%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the invite rate or the paid rate.","marks":{"top":{"kind":"band","band":"2%–5%","hot":false}}},"mid":{"id":"mid","label":"invite rate","text":"<b>Ours: 40%. Normal for B2B software: 30%–50%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the trial start rate or the paid rate.","marks":{"mid":{"kind":"band","band":"30%–50%","hot":false}}},"bot":{"id":"bot","label":"paid rate","text":"<b>Ours: 5%. Normal for B2B software: 20%–35%.<\/b> We are below normal. This step is broken, so this is the real problem.","marks":{"bot":{"kind":"band","band":"20%–35%","hot":true}}}},"reveal":{"right":"bot","right_name":"Pricing page problem","right_color":"#1d9d55","room_title":"THE CLASS · ANSWER: PRICING PAGE","answer":"THE REAL PROBLEM: PRICING PAGE · FIXING IT IS WORTH +€1,944,000 A YEAR","all_in":"+100","key":[{"id":"top","color":"#2563EB","name":"landing page","worth":"+€43,000","units":"+2","right":false},{"id":"mid","color":"#f59e0b","name":"onboarding","worth":"+€43,000","units":"+2","right":false},{"id":"bot","color":"#1d9d55","name":"pricing page","worth":"+€1,944,000","units":"+100","right":true}],"checks":[{"ok":true,"html":"Visitors → started a trial: <b>3%<\/b>, in the normal range of 2%–5%. 48,500 people leave here, which is normal."},{"ok":true,"html":"Started a trial → invited a teammate: <b>40%<\/b>, in the normal range of 30%–50%. 900 people leave here, which is normal."},{"ok":false,"html":"Invited a teammate → paid: <b>5%<\/b>, below the normal range of 20%–35%. 570 people leave here, and that is too many."},{"ok":null,"html":"Redesign the pricing page: paid rate <b>5% → 28%<\/b>. Paid <b>30 → 165<\/b> a month, worth <b>+€1,944,000<\/b> a year at €1,200 each."}],"why":"3% of visitors start a trial, which is normal for B2B. 40% invite a teammate, which is the middle of the normal range. Then only 5% pay, against 20 to 35. The product works, people use it, and the pricing page loses them. That is a paywall and pricing design problem, not a landing page.","decision":"","marks":{"top":{"kind":"band","band":"2%–5%","hot":false},"mid":{"kind":"band","band":"30%–50%","hot":false},"bot":{"kind":"band","band":"20%–35%","hot":true}}},"units":{"top":2.2222222222222223,"mid":2.2222222222222276,"bot":100.0},"bots":{"fermi":{"top":0,"mid":20,"bot":80},"gamblers":{"top":100,"mid":0,"bot":0},"hedgers":{"top":34,"mid":33,"bot":33}}},{"index":3,"kind":"funnel","part_label":"PART ONE · THE FUNNEL 🪣","title":"🩺 Alder Physio · Clinics","name":"Alder Physio","emoji":"🩺","industry":"clinics","brief":"A physiotherapy clinic asked for your help. 600 people enquire every month and 235 become returning patients. The owner is sure the website needs a redesign.","statement_title":"THE FUNNEL · A TYPICAL MONTH","statement":{"kind":"funnel","stages":[{"label":"Enquiries","count":"600","w":100.0,"sub":"a month"},{"label":"Booked an appointment","count":"420","w":88.99,"id":"top","sub":"booking rate","rate":"70%","leave":"180"},{"label":"Showed up","count":"294","w":77.98,"id":"mid","sub":"show-up rate","rate":"70%","leave":"126"},{"label":"Came back","count":"235","w":71.09,"id":"bot","sub":"return rate","rate":"80%","leave":"59"}]},"questions":[{"id":"top","tag":"ASK AN ANALYST","name":"Is our booking rate normal?","how":"Enquiries → booked an appointment. Shows the normal range for clinics next to ours."},{"id":"mid","tag":"ASK AN ANALYST","name":"Is our show-up rate normal?","how":"Booked an appointment → showed up. Shows the normal range for clinics next to ours."},{"id":"bot","tag":"ASK AN ANALYST","name":"Is our return rate normal?","how":"Showed up → came back. Shows the normal range for clinics next to ours."}],"layers":[{"id":"top","color":"#2563EB","tag":"STEP 1 · BOOKING RATE","name":"Website and phone intake problem","short":"website and phone intake","how":"Enquiries don't book. The fix: redesign the website and phone intake."},{"id":"mid","color":"#f59e0b","tag":"STEP 2 · SHOW-UP RATE","name":"Reminders and confirmations problem","short":"reminders and confirmations","how":"Bookings don't show up. The fix: redesign the reminders and confirmations."},{"id":"bot","color":"#1d9d55","tag":"STEP 3 · RETURN RATE","name":"Follow-up problem","short":"follow-up","how":"First visits don't lead to a second. The fix: redesign the follow-up."}],"asks":{"top":{"id":"top","label":"booking rate","text":"<b>Ours: 70%. Normal for clinics: 55%–75%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the show-up rate or the return rate.","marks":{"top":{"kind":"band","band":"55%–75%","hot":false}}},"mid":{"id":"mid","label":"show-up rate","text":"<b>Ours: 70%. Normal for clinics: 85%–95%.<\/b> We are below normal. This step is broken, so this is the real problem.","marks":{"mid":{"kind":"band","band":"85%–95%","hot":true}}},"bot":{"id":"bot","label":"return rate","text":"<b>Ours: 80%. Normal for clinics: 75%–90%.<\/b> That is normal or better. This step is healthy, so the real problem is one of the other two: the booking rate or the show-up rate.","marks":{"bot":{"kind":"band","band":"75%–90%","hot":false}}}},"reveal":{"right":"mid","right_name":"Reminders and confirmations problem","right_color":"#f59e0b","room_title":"THE CLASS · ANSWER: REMINDERS AND CONFIRMATIONS","answer":"THE REAL PROBLEM: REMINDERS AND CONFIRMATIONS · FIXING IT IS WORTH +€484,000 A YEAR","all_in":"+100","key":[{"id":"top","color":"#2563EB","name":"website and phone intake","worth":"+€169,000","units":"+35","right":false},{"id":"mid","color":"#f59e0b","name":"reminders and confirmations","worth":"+€484,000","units":"+100","right":true},{"id":"bot","color":"#1d9d55","name":"follow-up","worth":"+€169,000","units":"+35","right":false}],"checks":[{"ok":true,"html":"Enquiries → booked an appointment: <b>70%<\/b>, in the normal range of 55%–75%. 180 people leave here, which is normal."},{"ok":false,"html":"Booked an appointment → showed up: <b>70%<\/b>, below the normal range of 85%–95%. 126 people leave here, and that is too many."},{"ok":true,"html":"Showed up → came back: <b>80%<\/b>, in the normal range of 75%–90%. 59 people leave here, which is normal."},{"ok":null,"html":"Redesign the reminders and confirmations: show-up rate <b>70% → 90%<\/b>. Came back <b>235 → 302<\/b> a month, worth <b>+€484,000<\/b> a year at €600 each."}],"why":"Seven in ten enquiries book, which is normal. Eight in ten first visits lead to a second, which is normal too. But only 70% of booked appointments actually happen, against 85 to 95. The leak is the no-show: reminders, confirmations, how easy it is to reschedule. A service has a funnel like any app, and this one leaks in the middle, not on the website.","decision":"","marks":{"top":{"kind":"band","band":"55%–75%","hot":false},"mid":{"kind":"band","band":"85%–95%","hot":true},"bot":{"kind":"band","band":"75%–90%","hot":false}}},"units":{"top":34.99999999999995,"mid":100.0,"bot":35.000000000000036},"bots":{"fermi":{"top":0,"mid":80,"bot":20},"gamblers":{"top":100,"mid":0,"bot":0},"hedgers":{"top":34,"mid":33,"bot":33}}},{"index":4,"kind":"pl","part_label":"PART TWO · THE P&L 📒","title":"🍜 Ramen chain · Restaurants","name":"Ramen chain","emoji":"🍜","industry":"restaurants","brief":"The owner of four ramen bars in one city came to you. Full at lunch, respectable at dinner, and the profit is thin. What do you think is going wrong?","statement_title":"PROFIT AND LOSS · LAST YEAR","statement":{"kind":"pl","rows":[{"t":"big","key":"revenue","label":"Revenue","sub":"top line","v":"€2,000,000","neg":false,"m":""},{"t":"rung","text":"cost of goods sold","v":"€1,400,000","plus":false},{"t":"big","key":"gross","label":"Gross profit","sub":"the product","v":"€600,000","neg":false,"m":"30%"},{"t":"rung","text":"operating expenses","v":"€500,000","plus":false},{"t":"big","key":"op","label":"Operating profit","sub":"the company","v":"€100,000","neg":false,"m":"5%"},{"t":"rung","text":"tax","v":"€20,000","plus":false},{"t":"big","key":"net","label":"Net profit","sub":"bottom line","v":"€80,000","neg":false,"m":"4%"}]},"questions":[{"id":"price","tag":"ASK SALES","name":"What does the market charge?","how":"Shows what others charge next to our price."},{"id":"gross","tag":"ASK AN ANALYST","name":"Is our gross margin normal?","how":"Gross margin is gross profit as a share of revenue. Shows the normal range for restaurants next to ours."},{"id":"op","tag":"ASK AN ANALYST","name":"Is our operating margin normal?","how":"Operating margin is operating profit as a share of revenue. Shows the normal range for restaurants next to ours."}],"layers":[{"id":"price","color":"#2563EB","tag":"PRICE · REVENUE","name":"Price problem","short":"price","how":"Gross margin is below normal, and our price is below the market. The fix: raise prices 10%."},{"id":"cogs","color":"#f59e0b","tag":"COST OF GOODS · GROSS MARGIN","name":"Cost of goods problem","short":"cost of goods","how":"Gross margin is below normal, and our price matches the market. The fix: cut cost of goods 15%."},{"id":"company","color":"#1d9d55","tag":"COMPANY · OPERATING MARGIN","name":"Company problem","short":"company","how":"Gross margin is normal, but operating margin is below normal. The fix: cut OPEX 20%."}],"asks":{"price":{"id":"price","label":"the market price","text":"<b>Ours: €11 a bowl. Market: €13 to €15 at comparable ramen bars.<\/b> We charge less than the market. If the gross margin is low too, the price is the problem.","marks":{"price":{"kind":"price","ours":"€11 a bowl","short":"€11","band":"€13–€15","ctx":"comparable ramen bars","hot":true}}},"gross":{"id":"gross","label":"gross margin","text":"<b>Ours: 30%. Normal for restaurants: 45%–55%.<\/b> We are below normal. So the problem is in the product: the price or the cost of goods.","marks":{"gross":{"kind":"band","band":"45%–55%","hot":true}}},"op":{"id":"op","label":"operating margin","text":"<b>Ours: 5%. Normal for restaurants: 3%–8%.<\/b> That is normal or better. So the company is not the problem.","marks":{"op":{"kind":"band","band":"3%–8%","hot":false}}}},"reveal":{"right":"price","right_name":"Price problem","right_color":"#2563EB","room_title":"THE CLASS · ANSWER: PRICE","answer":"THE REAL PROBLEM: PRICE · THE FIX: RAISE PRICES 10% · WORTH +€128,000","all_in":"+100","key":[{"id":"price","color":"#2563EB","name":"price","worth":"+€128,000","units":"+100","right":true},{"id":"cogs","color":"#f59e0b","name":"cost of goods","worth":"+€38,000","units":"+30","right":false},{"id":"company","color":"#1d9d55","name":"company","worth":"+€51,000","units":"+40","right":false}],"checks":[{"ok":false,"html":"Gross margin <b>30%<\/b>, below the normal range for restaurants of 45%–55%. The product is the problem."},{"ok":false,"html":"Price <b>€11 a bowl<\/b>, market €13 to €15 at comparable ramen bars. We charge too little."},{"ok":null,"html":"Raise prices 10%: €11 to €12.10. The lunch queue barely notices. Volume −5%, and net profit goes from <b>€80,000<\/b> to <b>€208,000<\/b>."}],"why":"Gross margin is 30 percent against a normal range for restaurants of 45 to 55 (with the kitchen staff counted in cost of goods), so the bowl is the problem and OPEX was never the issue. The bowl sells at €11 where comparable bars charge €13 to €15, so it is the price, not the kitchen. Craft is high: a cheaper broth costs 20 percent of revenue and eats most of the saving. Price sensitivity is low, so the price rise keeps almost all the volume.","decision":"Low gross margin points at the product layer. Inside that layer, the tags decide: customers who queue anyway pay more, and a product people taste does not get cheaper.","marks":{"price":{"kind":"price","ours":"€11 a bowl","short":"€11","band":"€13–€15","ctx":"comparable ramen bars","hot":true},"gross":{"kind":"band","band":"45%–55%","hot":true},"op":{"kind":"band","band":"3%–8%","hot":false}}},"units":{"price":100.0,"cogs":30.000000000000004,"company":39.99999999999999},"bots":{"fermi":{"price":80,"cogs":0,"company":20},"gamblers":{"price":0,"cogs":0,"company":100},"hedgers":{"price":34,"cogs":33,"company":33}}},{"index":5,"kind":"pl","part_label":"PART TWO · THE P&L 📒","title":"☁️ SaaS · Software","name":"SaaS","emoji":"☁️","industry":"software","brief":"The founders of a project management tool came to you. 120 people, growing, loved by customers, and almost no profit at the end of the year. What is going wrong?","statement_title":"PROFIT AND LOSS · LAST YEAR","statement":{"kind":"pl","rows":[{"t":"big","key":"revenue","label":"Revenue","sub":"top line","v":"€3,000,000","neg":false,"m":""},{"t":"rung","text":"cost of goods sold","v":"€600,000","plus":false},{"t":"big","key":"gross","label":"Gross profit","sub":"the product","v":"€2,400,000","neg":false,"m":"80%"},{"t":"rung","text":"operating expenses","v":"€2,280,000","plus":false},{"t":"big","key":"op","label":"Operating profit","sub":"the company","v":"€120,000","neg":false,"m":"4%"},{"t":"rung","text":"tax","v":"€24,000","plus":false},{"t":"big","key":"net","label":"Net profit","sub":"bottom line","v":"€96,000","neg":false,"m":"3%"}]},"questions":[{"id":"price","tag":"ASK SALES","name":"What does the market charge?","how":"Shows what others charge next to our price."},{"id":"gross","tag":"ASK AN ANALYST","name":"Is our gross margin normal?","how":"Gross margin is gross profit as a share of revenue. Shows the normal range for software next to ours."},{"id":"op","tag":"ASK AN ANALYST","name":"Is our operating margin normal?","how":"Operating margin is operating profit as a share of revenue. Shows the normal range for software next to ours."}],"layers":[{"id":"price","color":"#2563EB","tag":"PRICE · REVENUE","name":"Price problem","short":"price","how":"Gross margin is below normal, and our price is below the market. The fix: raise prices 10%."},{"id":"cogs","color":"#f59e0b","tag":"COST OF GOODS · GROSS MARGIN","name":"Cost of goods problem","short":"cost of goods","how":"Gross margin is below normal, and our price matches the market. The fix: cut cost of goods 15%."},{"id":"company","color":"#1d9d55","tag":"COMPANY · OPERATING MARGIN","name":"Company problem","short":"company","how":"Gross margin is normal, but operating margin is below normal. The fix: cut OPEX 20%."}],"asks":{"price":{"id":"price","label":"the market price","text":"<b>Ours: €15 per seat a month. Market: €12 to €20 for comparable tools.<\/b> Our price matches the market. So the price is not the problem.","marks":{"price":{"kind":"price","ours":"€15 per seat a month","short":"€15","band":"€12–€20","ctx":"comparable tools","hot":false}}},"gross":{"id":"gross","label":"gross margin","text":"<b>Ours: 80%. Normal for software: 70%–85%.<\/b> That is normal or better. So the product is fine. Look at the company.","marks":{"gross":{"kind":"band","band":"70%–85%","hot":false}}},"op":{"id":"op","label":"operating margin","text":"<b>Ours: 4%. Normal for software: 10%–25%.<\/b> We are below normal. That points at the company, but only if the gross margin is normal.","marks":{"op":{"kind":"band","band":"10%–25%","hot":true}}}},"reveal":{"right":"company","right_name":"Company problem","right_color":"#1d9d55","room_title":"THE CLASS · ANSWER: COMPANY","answer":"THE REAL PROBLEM: COMPANY · THE FIX: CUT OPEX 20% · WORTH +€208,000","all_in":"+100","key":[{"id":"price","color":"#2563EB","name":"price","worth":"+€132,000","units":"+63","right":false},{"id":"cogs","color":"#f59e0b","name":"cost of goods","worth":"−€87,000","units":"−42","right":false},{"id":"company","color":"#1d9d55","name":"company","worth":"+€208,000","units":"+100","right":true}],"checks":[{"ok":true,"html":"Gross margin <b>80%<\/b>, in the normal range for software of 70%–85%. The product is fine."},{"ok":false,"html":"Operating margin <b>4%<\/b>, below the normal range of 10%–25%. The company costs too much to run."},{"ok":null,"html":"Cut OPEX 20%: A smaller sales team, no second office, fewer tools. Revenue −8%, and net profit goes from <b>€96,000<\/b> to <b>€304,000<\/b>."}],"why":"An 80 percent gross margin says the product is fine. A 4 percent operating margin, against a normal range of 10 to 25, says the company around it costs too much. About 40 percent of OPEX buys customers, so the cut does hurt revenue, and it still wins because the line it hits is €2.3 million.","decision":"High gross, thin operating: the company is too big for its revenue. A price rise helps and fixes the wrong line.","marks":{"price":{"kind":"price","ours":"€15 per seat a month","short":"€15","band":"€12–€20","ctx":"comparable tools","hot":false},"gross":{"kind":"band","band":"70%–85%","hot":false},"op":{"kind":"band","band":"10%–25%","hot":true}}},"units":{"price":63.41019417475755,"cogs":-41.96601941747572,"company":100.0},"bots":{"fermi":{"price":20,"cogs":0,"company":80},"gamblers":{"price":100,"cogs":0,"company":0},"hedgers":{"price":34,"cogs":33,"company":33}}},{"index":6,"kind":"pl","part_label":"PART TWO · THE P&L 📒","title":"🔌 Hardware startup · Consumer hardware","name":"Hardware startup","emoji":"🔌","industry":"consumer hardware","brief":"A smart thermostat startup in year two called you in. Sales are growing, the money is running out, and the runway is twelve months. What is going wrong?","statement_title":"PROFIT AND LOSS · LAST YEAR","statement":{"kind":"pl","rows":[{"t":"big","key":"revenue","label":"Revenue","sub":"top line","v":"€2,200,000","neg":false,"m":""},{"t":"rung","text":"cost of goods sold","v":"€1,800,000","plus":false},{"t":"big","key":"gross","label":"Gross profit","sub":"the product","v":"€400,000","neg":false,"m":"18%"},{"t":"rung","text":"operating expenses","v":"€600,000","plus":false},{"t":"big","key":"op","label":"Operating profit","sub":"the company","v":"−€200,000","neg":true,"m":"−9%"},{"t":"rung","text":"Interest on venture loan","v":"€50,000","plus":false},{"t":"rung","text":"tax","v":"€0","plus":false},{"t":"big","key":"net","label":"Net profit","sub":"bottom line","v":"−€250,000","neg":true,"m":"−11%"}]},"questions":[{"id":"price","tag":"ASK SALES","name":"What does the market charge?","how":"Shows what others charge next to our price."},{"id":"gross","tag":"ASK AN ANALYST","name":"Is our gross margin normal?","how":"Gross margin is gross profit as a share of revenue. Shows the normal range for consumer hardware next to ours."},{"id":"op","tag":"ASK AN ANALYST","name":"Is our operating margin normal?","how":"Operating margin is operating profit as a share of revenue. Shows the normal range for consumer hardware next to ours."}],"layers":[{"id":"price","color":"#2563EB","tag":"PRICE · REVENUE","name":"Price problem","short":"price","how":"Gross margin is below normal, and our price is below the market. The fix: raise prices 10%."},{"id":"cogs","color":"#f59e0b","tag":"COST OF GOODS · GROSS MARGIN","name":"Cost of goods problem","short":"cost of goods","how":"Gross margin is below normal, and our price matches the market. The fix: cut cost of goods 15%."},{"id":"company","color":"#1d9d55","tag":"COMPANY · OPERATING MARGIN","name":"Company problem","short":"company","how":"Gross margin is normal, but operating margin is below normal. The fix: cut OPEX 20%."}],"asks":{"price":{"id":"price","label":"the market price","text":"<b>Ours: €200 a unit. Market: €180 to €220 for smart thermostats.<\/b> Our price matches the market. So the price is not the problem.","marks":{"price":{"kind":"price","ours":"€200 a unit","short":"€200","band":"€180–€220","ctx":"smart thermostats","hot":false}}},"gross":{"id":"gross","label":"gross margin","text":"<b>Ours: 18%. Normal for consumer hardware: 30%–45%.<\/b> We are below normal. So the problem is in the product: the price or the cost of goods.","marks":{"gross":{"kind":"band","band":"30%–45%","hot":true}}},"op":{"id":"op","label":"operating margin","text":"<b>Ours: −9%. Normal for consumer hardware: 5%–15%.<\/b> We are below normal. That points at the company, but only if the gross margin is normal.","marks":{"op":{"kind":"band","band":"5%–15%","hot":true}}}},"reveal":{"right":"cogs","right_name":"Cost of goods problem","right_color":"#f59e0b","room_title":"THE CLASS · ANSWER: COST OF GOODS","answer":"THE REAL PROBLEM: COST OF GOODS · THE FIX: CUT COST OF GOODS 15% · WORTH +€266,000","all_in":"+100","key":[{"id":"price","color":"#2563EB","name":"price","worth":"+€65,000","units":"+24","right":false},{"id":"cogs","color":"#f59e0b","name":"cost of goods","worth":"+€266,000","units":"+100","right":true},{"id":"company","color":"#1d9d55","name":"company","worth":"+€100,000","units":"+38","right":false}],"checks":[{"ok":false,"html":"Gross margin <b>18%<\/b>, below the normal range for consumer hardware of 30%–45%. The product is the problem."},{"ok":true,"html":"Price <b>€200 a unit<\/b>, market €180 to €220 for smart thermostats. Our price matches the market, so the product costs too much to make."},{"ok":null,"html":"Cut cost of goods 15%: One board instead of two, fewer parts, a cheaper enclosure. Revenue holds, and net profit goes from <b>−€250,000<\/b> to <b>€16,000<\/b>."}],"why":"Gross margin is 18 percent against a normal range of 30 to 45, while the price sits at the market, so the unit costs too much to build. The loss shows at the operating line, but it starts one line up: the product leaves too little to pay for any company. Volume will not save it either, sales would have to grow by more than half just to break even. Craft is low: a redesign for cost loses no customers. Price sensitivity is high, so a price rise loses a quarter of the buyers.","decision":"The loss shows at the operating line, but it starts at the gross margin. Read the P&L from the top and fix the first line that is below normal.","marks":{"price":{"kind":"price","ours":"€200 a unit","short":"€200","band":"€180–€220","ctx":"smart thermostats","hot":false},"gross":{"kind":"band","band":"30%–45%","hot":true},"op":{"kind":"band","band":"5%–15%","hot":true}}},"units":{"price":24.436090225563994,"cogs":100.0,"company":37.59398496240601},"bots":{"fermi":{"price":0,"cogs":80,"company":20},"gamblers":{"price":0,"cogs":0,"company":100},"hedgers":{"price":34,"cogs":33,"company":33}}},{"index":7,"kind":"pl","part_label":"PART TWO · THE P&L 📒","title":"🛒 Grocery chain · Grocery","name":"Grocery chain","emoji":"🛒","industry":"grocery","brief":"The board of a nine store grocery chain came to you. Net profit looks fine this year, but part of it came from selling an old warehouse. What is going wrong?","statement_title":"PROFIT AND LOSS · LAST YEAR","statement":{"kind":"pl","rows":[{"t":"big","key":"revenue","label":"Revenue","sub":"top line","v":"€10,000,000","neg":false,"m":""},{"t":"rung","text":"cost of goods sold","v":"€7,600,000","plus":false},{"t":"big","key":"gross","label":"Gross profit","sub":"the product","v":"€2,400,000","neg":false,"m":"24%"},{"t":"rung","text":"operating expenses","v":"€2,300,000","plus":false},{"t":"big","key":"op","label":"Operating profit","sub":"the company","v":"€100,000","neg":false,"m":"1%"},{"t":"rung","text":"Sale of old warehouse (one-time)","v":"€150,000","plus":true},{"t":"rung","text":"tax","v":"€50,000","plus":false},{"t":"big","key":"net","label":"Net profit","sub":"bottom line","v":"€200,000","neg":false,"m":"2%"}]},"questions":[{"id":"price","tag":"ASK SALES","name":"What does the market charge?","how":"Shows what others charge next to our price."},{"id":"gross","tag":"ASK AN ANALYST","name":"Is our gross margin normal?","how":"Gross margin is gross profit as a share of revenue. Shows the normal range for grocery next to ours."},{"id":"op","tag":"ASK AN ANALYST","name":"Is our operating margin normal?","how":"Operating margin is operating profit as a share of revenue. Shows the normal range for grocery next to ours."}],"layers":[{"id":"price","color":"#2563EB","tag":"PRICE · REVENUE","name":"Price problem","short":"price","how":"Gross margin is below normal, and our price is below the market. The fix: raise prices 10%."},{"id":"cogs","color":"#f59e0b","tag":"COST OF GOODS · GROSS MARGIN","name":"Cost of goods problem","short":"cost of goods","how":"Gross margin is below normal, and our price matches the market. The fix: cut cost of goods 15%."},{"id":"company","color":"#1d9d55","tag":"COMPANY · OPERATING MARGIN","name":"Company problem","short":"company","how":"Gross margin is normal, but operating margin is below normal. The fix: cut OPEX 20%."}],"asks":{"price":{"id":"price","label":"the market price","text":"<b>Ours: basket index 100. Market: 98 to 103 across the big chains.<\/b> Our price matches the market. So the price is not the problem.","marks":{"price":{"kind":"price","ours":"basket index 100","short":"100","band":"98–103","ctx":"the big chains","hot":false}}},"gross":{"id":"gross","label":"gross margin","text":"<b>Ours: 24%. Normal for grocery: 20%–28%.<\/b> That is normal or better. So the product is fine. Look at the company.","marks":{"gross":{"kind":"band","band":"20%–28%","hot":false}}},"op":{"id":"op","label":"operating margin","text":"<b>Ours: 1%. Normal for grocery: 2%–4%.<\/b> We are below normal. That points at the company, but only if the gross margin is normal.","marks":{"op":{"kind":"band","band":"2%–4%","hot":true}}}},"reveal":{"right":"company","right_name":"Company problem","right_color":"#1d9d55","room_title":"THE CLASS · ANSWER: COMPANY","answer":"THE REAL PROBLEM: COMPANY · THE FIX: CUT OPEX 20% · WORTH +€351,000","all_in":"+100","key":[{"id":"price","color":"#2563EB","name":"price","worth":"+€120,000","units":"+34","right":false},{"id":"cogs","color":"#f59e0b","name":"cost of goods","worth":"+€62,000","units":"+18","right":false},{"id":"company","color":"#1d9d55","name":"company","worth":"+€351,000","units":"+100","right":true}],"checks":[{"ok":true,"html":"Gross margin <b>24%<\/b>, in the normal range for grocery of 20%–28%. The product is fine."},{"ok":false,"html":"Operating margin <b>1%<\/b>, below the normal range of 2%–4%. The company costs too much to run."},{"ok":null,"html":"Cut OPEX 20%: Self checkout, two stores on shorter hours, one depot instead of two. Revenue −1%, and net profit goes from <b>€200,000<\/b> to <b>€551,000<\/b>."}],"why":"A 24 percent gross margin is normal in grocery, where the normal range is 20 to 28. Operating margin is 1 percent, half of the normal 2 to 4, and only a one-time warehouse sale lifts net profit to a normal looking 2 percent. So it is a company problem. Price sensitivity is high, shoppers switch chains over cents. Craft is very high too: cheaper goods on the shelf lose three shoppers in ten, which eats almost all of the saving. The lever is OPEX.","decision":"A one-time gain below the line can hide a weak operating profit. Strip it out before you decide anything.","marks":{"price":{"kind":"price","ours":"basket index 100","short":"100","band":"98–103","ctx":"the big chains","hot":false},"gross":{"kind":"band","band":"20%–28%","hot":false},"op":{"kind":"band","band":"2%–4%","hot":true}}},"units":{"price":34.15841584158413,"cogs":17.76237623762374,"company":100.0},"bots":{"fermi":{"price":20,"cogs":0,"company":80},"gamblers":{"price":100,"cogs":0,"company":0},"hedgers":{"price":34,"cogs":33,"company":33}}}]}/*DATA:END*/;
+const ROUNDS = DATA.rounds, TOTAL_ROUNDS = ROUNDS.length, DEFS = DATA.defs, CHIPS = 100;
+
+// ===================== EmailJS (shared d.MBA templates; distinguished by game_name) =====================
+const EMAILJS_PUBLIC_KEY='C16RP8PBnTudO3pTa';
+const EMAILJS_SERVICE_ID='service_vgc4x29';
+const EMAILJS_ADMIN_TEMPLATE='template_04i67k6';
+const EMAILJS_CONFIRM_TEMPLATE='template_fwackuq';
+const ADMIN_EMAIL='admin@d.mba,mersi@d.mba';
+
+// ===================== STATE =====================
+let player = { name:"", email:"", round:0, score:0, history:[] };
+let bet = null;          // current round: {chips:{layerId:n}, pick, asked, undo, nudged}
+let rulesSeen = false;   // the first round opens on the rules
+
+// ===================== HELPERS =====================
+function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function $(id){ return document.getElementById(id); }
+let _screen=null;
+function showScreen(id){ document.querySelectorAll('body > div[id^="screen-"]').forEach(s=>s.classList.add('hidden')); $(id).classList.remove('hidden'); $('tip').style.display='none'; if(id!==_screen){ window.scrollTo(0,0); _screen=id; } }
+function fmtDelta(v){ return (v<0?'−':'+')+Math.abs(Math.round(v)).toLocaleString('en-US'); }
+function fmtPts(v){ return (v<0?'−':'')+Math.abs(Math.round(v)).toLocaleString('en-US')+' pts'; }
+function signCls(v){ return v>0?'plus':'zero'; }
+function def(key,label){ return '<span class="def" tabindex="0" data-def="'+esc(key)+'">'+esc(label)+'</span>'; }
+function stepHead(n,title,done){ return '<div class="steph"><span class="stepn'+(done?' done':'')+'">'+n+'</span><h3>'+esc(title)+'</h3></div>'; }
+
+// ===================== SCORING =====================
+// Each chip pays its problem's point value, per 100 chips. Same sum, same order and
+// same rounding as scoring.py in the multiplayer game.
+function scoreRound(i, chips){
+  const r=ROUNDS[i], u=r.units; let p=0;
+  for(const lid in u) p += u[lid]*(chips[lid]||0)/100;
+  return { payout: Math.round(Math.round(p*1e6)/1e6) + 0, share: chips[r.reveal.right]||0 };
+}
+
+// ===================== THE STATEMENT (funnel / P&L) =====================
+// `marks` carries the hidden normal ranges: empty while you play (apart from the
+// one you asked for), complete at the reveal.
+function markM(base, mark){
+  if(!mark) return '<div class="m">'+esc(base||'')+'</div>';
+  return '<div class="m '+(mark.hot?'hot':'ok')+'">'+esc(base||'')+'<br><span class="ind">'+(mark.kind==='price'?'market':'normal')+' <span class="nw">'+esc(mark.band)+'</span></span></div>';
+}
+function funnelHTML(st, marks){
+  marks=marks||{}; const s=st.stages; let h='<div class="fn">';
+  s.forEach((x,i)=>{
+    if(i>0){ const p=s[i-1].w, inset=(p-x.w)/2/p*100;
+      h+='<div></div><div class="conn" style="width:'+p+'%"><i style="clip-path:polygon(0 0,100% 0,'+(100-inset)+'% 100%,'+inset+'% 100%)"></i><span>−<b>'+esc(x.leave)+'</b>leave</span></div><div class="blank"></div>'; }
+    h+='<div class="l">'+esc(x.label)+'<small>'+(i===0 ? esc(x.sub||'') : def('rate', x.sub||'rate'))+'</small></div>'
+      +'<div class="stage'+(i===s.length-1?' last':'')+'" style="width:'+x.w+'%">'+esc(x.count)+'</div>'
+      +(i===0 ? '<div class="m"></div>' : markM(x.rate, marks[x.id]));
+  });
+  return h+'</div>';
+}
+function plHTML(st, marks){
+  marks=marks||{}; let h='<div class="ld">';
+  st.rows.forEach(r=>{
+    if(r.t==='rung'){ h+='<div class="rung">'+(r.plus?'+':'−')+' <b'+(r.plus?' class="plus"':'')+'>'+esc(r.v)+'</b> '+esc(r.text)+'</div>'; return; }
+    let sub=esc(r.sub||''), m; const pm=marks.price;
+    if(r.key==='revenue'){
+      if(pm){ sub='we charge <b>'+esc(pm.ours)+'</b>'+(pm.ctx ? ' · market: '+esc(pm.ctx) : ''); m=markM(pm.short, pm); }
+      else m='<div class="m">'+esc(r.m||'')+'</div>';
+    } else if(r.key==='gross' || r.key==='op') m=markM(r.m, marks[r.key]);
+    else m='<div class="m">'+esc(r.m||'')+'</div>';
+    h+='<div class="big"><div class="l">'+def(r.key, r.label)+'<small>'+sub+'</small></div><div class="v'+(r.neg?' neg':'')+'">'+esc(r.v)+'</div>'+m+'</div>';
+  });
+  return h+'</div>';
+}
+function statementHTML(st, marks){ return st.kind==='funnel' ? funnelHTML(st, marks) : plHTML(st, marks); }
+
+// ===================== CHIP STRIPS, KEY, WHY =====================
+// 100 chips as one bar. Every segment keeps its problem's colour, so the key
+// under the rows always matches; at the reveal the wrong ones fade.
+function hexRGB(hex){ const m=/^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m) return null; const n=parseInt(m[1],16); return [n>>16,(n>>8)&255,n&255]; }
+function inkFor(hex){ const c=hexRGB(hex); return c && (0.299*c[0]+0.587*c[1]+0.114*c[2])<100 ? '#fff' : '#1a1a1a'; }
+function tintOf(hex){ const c=hexRGB(hex); return c ? 'rgb('+c.map(v=>Math.round(v*0.3+255*0.7)).join(',')+')' : '#e6e1d6'; }
+function stripHTML(layers, chips, right){
+  chips=chips||{};
+  const segs=layers.filter(l=>(chips[l.id]||0)>0).map(l=>{
+    const c=chips[l.id], hit=l.id===right;
+    return '<div'+(hit?' class="hit"':' class="dim"')+' title="'+c+' chips on '+esc(l.short||l.name||'')+(hit?' (the real problem)':'')
+      +'" style="width:'+c+'%;background:'+(hit?l.color:tintOf(l.color))+';color:'+(hit?inkFor(l.color):'#444')+'">'+(hit?'<i>✓</i>':'')+'<span>'+c+'</span></div>'; }).join('');
+  return '<div class="strip">'+(segs||'<div class="none" style="width:100%">no chips placed</div>')+'</div>';
+}
+function keyHTML(rv){ return '<div class="key">'+rv.key.map(k=>'<span style="--c:'+k.color+'"'+(k.right?' class="r"':'')+'>'+(k.right?'✓ ':'')+esc(k.name)+' '+esc(k.units)+'</span>').join('')+'</div>'; }
+// check lines and ask answers are trusted HTML from the game data (they carry <b> tags)
+function checksHTML(rv){ return (rv.checks||[]).map(c=>'<div class="check"><span class="ic '+(c.ok===true?'ok':c.ok===false?'hot':'')+'">'+(c.ok===true?'✓':c.ok===false?'✗':'→')+'</span><div>'+c.html+'</div></div>').join(''); }
+function whyHTML(rv){
+  return '<h3>Why</h3><div>'+checksHTML(rv)+'</div>'
+    +(rv.why ? '<div class="why-text">'+esc(rv.why)+'</div>' : '')
+    +(rv.decision ? '<div class="decision"><b>SO WHAT</b>'+esc(rv.decision)+'</div>' : '');
+}
+
+// What a P&L looks like, next to the funnel just played. A made-up example, not one of the rounds.
+const PART_PIC = '<div class="part-pic">'
+  + '<div class="pp-h">PART ONE · THE FUNNEL</div><div class="pp-s">You followed <b>people</b>. Each step lost some of them.</div>'
+  + '<div class="pp-fn"><i style="width:100%">1,000 visited</i><i style="width:60%">200 signed up</i><i style="width:34%">50 paid</i></div>'
+  + '<div class="pp-h">PART TWO · THE P&amp;L</div><div class="pp-s">Now you follow <b>money</b>. Each line takes some of it away. Example: a bakery.</div>'
+  + '<div class="pp-row"><div class="l">Revenue<small>the money that came in</small></div><div class="v">€100,000</div></div>'
+  + '<div class="pp-rung">− <b>€60,000</b> cost of goods (flour, bakers)</div>'
+  + '<div class="pp-row"><div class="l">Gross profit<small>gross margin: 40,000 of 100,000 = 40%</small></div><div class="v">€40,000</div></div>'
+  + '<div class="pp-rung">− <b>€30,000</b> OPEX (rent, office, marketing)</div>'
+  + '<div class="pp-row"><div class="l">Operating profit<small>operating margin: 10,000 of 100,000 = 10%</small></div><div class="v">€10,000</div></div>'
+  + '<div class="pp-cap">In the funnel you compared a step\'s % with what is normal. Here you compare a <b>margin</b> with what is normal.</div></div>';
+
+// ===================== GAME FLOW =====================
+function submitRegistration(){
+  const name=$('reg-name').value.trim();
+  const email=$('reg-email').value.trim();
+  const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if(!name || !ok || !$('reg-consent').checked){ $('reg-error').style.display='block'; return; }
+  $('reg-error').style.display='none';
+  player.name=name; player.email=email;
+  startGame();
+}
+function startGame(){
+  player.round=0; player.score=0; player.history=[];
+  rulesSeen=false;
+  renderRound();
+}
+function R(){ return ROUNDS[player.round]; }
+function statusHTML(extra){
+  return '<div class="status"><span class="rbadge">ROUND '+(player.round+1)+' / '+TOTAL_ROUNDS+(extra||'')+'</span><span class="bank">SCORE '+fmtPts(player.score)+'</span></div>';
+}
+
+// ----- the round: 1 read the numbers, 2 ask one question, 3 bet the chips -----
+function renderRound(){
+  const r=R(), first=!rulesSeen;
+  bet={ chips:{}, pick:null, asked:null, undo:null, nudged:false };
+  r.layers.forEach(l=>{ bet.chips[l.id]=0; });
+  $('round-body').innerHTML = statusHTML()
+    + '<div id="rb"'+(first?' class="rules-first"':'')+'>'
+    +   '<details class="rules"'+(first?' open':'')+'><summary>HOW THIS WORKS</summary>'
+    +     '<ul class="intro-rules">'+DATA.rules[r.kind].map(t=>'<li>'+t+'</li>').join('')+'</ul>'
+    +     '<p class="rules-order">On this screen, work in order:<b>1</b> read the numbers,<b>2</b> ask one question,<b>3</b> bet your chips.</p>'
+    +     '<div class="rules-go"><button class="primary" onclick="gotIt()">GOT IT. SHOW ME THE ROUND →</button></div>'
+    +   '</details>'
+    +   '<div class="round-cols" id="round-cols"'+(first?' inert':'')+'>'
+    +     '<div class="card"><div class="q-label">'+esc(r.part_label)+'</div><div class="q-text">'+esc(r.title)+'</div><p class="why-text">'+esc(r.brief)+'</p></div>'
+    +     '<div class="card" id="st-card"></div>'
+    +     '<div class="card" id="q-card"></div>'
+    +     '<div class="card" id="bet-card"></div>'
+    +     '<div class="lock-row"><div class="nudge" id="lock-nudge" role="status">You have not asked your one question yet. It is free, and it shows what is normal. Press <b>LOCK IN</b> again to carry on without it.</div>'
+    +     '<button class="primary" id="lock-btn" onclick="lockIn()" disabled>LOCK IN →</button></div>'
+    +   '</div>'
+    + '</div>';
+  renderStatement(); renderQCard(); renderBetCard();
+  showScreen('screen-round');
+}
+function gotIt(){
+  rulesSeen=true;
+  $('rb').classList.remove('rules-first');
+  $('round-cols').removeAttribute('inert');
+  $('rb').querySelector('details.rules').open=false;
+  window.scrollTo(0,0);
+}
+function askedMarks(){ const r=R(); return bet.asked ? r.asks[bet.asked].marks : {}; }
+function renderStatement(){
+  const r=R();
+  $('st-card').innerHTML = stepHead('1','Read the numbers · '+r.statement_title) + statementHTML(r.statement, askedMarks());
+}
+function renderQCard(){
+  const r=R(), asked=bet.asked; let h=stepHead(asked?'✓':'2','Ask one question',!!asked);
+  if(asked){
+    const a=r.asks[asked], mk=a.marks[asked];
+    const tag = !mk ? '' : '<span class="ans-tag">'+(mk.kind==='price'
+      ? (mk.hot ? '⚠ BELOW THE MARKET' : '✓ IN LINE WITH THE MARKET') : (mk.hot ? '⚠ BELOW NORMAL' : '✓ NORMAL OR BETTER'))+'</span>';
+    h+='<div class="check-note answer '+(mk && mk.hot ? 'bad' : 'good')+'" id="q-answer">'+tag+a.text+'</div>';
+  } else {
+    h+='<p class="check-note"><b>Ask one question.</b> It is your one test. It is free, and it shows what is normal for '+esc(r.industry)+'. You cannot change it after you ask, so choose carefully.</p>';
+  }
+  h+='<div class="choices ask">'+r.questions.map(q=>
+      '<div class="choice'+(asked?' used':'')+((asked||bet.pick)===q.id?' on':'')+'" data-q="'+esc(q.id)+'" role="button"'+(asked?' aria-disabled="true"':' tabindex="0"')+'>'
+      +'<div class="c-tag">'+esc(q.tag)+'</div><div class="c-name">'+esc(q.name)+'</div><div class="c-how">'+esc(q.how)+'</div></div>').join('')+'</div>';
+  if(!asked) h+='<div class="center" style="margin-top:14px;"><button class="primary" id="ask-btn" onclick="askQuestion()"'+(bet.pick?'':' disabled')+'>'+(bet.pick?'ASK THIS (FINAL) →':'PICK A QUESTION')+'</button></div>';
+  $('q-card').innerHTML=h;
+}
+function pickQuestion(qid){ if(bet.asked) return; bet.pick = bet.pick===qid ? null : qid; renderQCard(); }
+function askQuestion(){
+  if(bet.asked || !bet.pick) return;
+  bet.asked=bet.pick; bet.nudged=false; $('lock-nudge').style.display='none';
+  renderQCard(); renderStatement();
+  $('q-card').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function renderBetCard(){
+  const r=R();
+  $('bet-card').innerHTML = stepHead('3','Bet your 100 chips')
+    + '<p class="check-note">Bet on what you think is wrong. Sure? Go all in. Not sure? Split them. The more chips on the real problem, the more you score.</p>'
+    + '<div class="chipbar" aria-hidden="true">'+r.layers.map(l=>'<div class="seg" data-seg="'+esc(l.id)+'" style="background:'+l.color+'"></div>').join('')+'</div>'
+    + '<div class="chips-left"><span id="chips-left" aria-live="polite"></span><span class="link" id="undo-allin" role="button" tabindex="0" hidden>↩ Undo all in</span></div>'
+    + '<div class="choices">'+r.layers.map(l=>
+        '<div class="layer"><div class="c-tag" style="color:'+l.color+'">'+esc(l.tag)+'</div><div class="c-name">'+esc(l.name)+'</div><div class="c-how">'+esc(l.how)+'</div>'
+        +'<div class="chips" data-chips="'+esc(l.id)+'">0</div>'
+        +'<div class="ctrl">'+[-25,-10,10,25].map(d=>'<button class="small" data-l="'+esc(l.id)+'" data-d="'+d+'" aria-label="'+(d<0?'Take '+(-d)+' chips off ':'Add '+d+' chips to ')+esc(l.short||l.name)+'">'+(d<0?'−':'+')+Math.abs(d)+'</button>').join('')+'</div>'
+        +'<button class="small allin" data-all="'+esc(l.id)+'">ALL 100 HERE</button></div>').join('')+'</div>';
+  paintChips();
+}
+function chipsLeft(){ return CHIPS - Object.values(bet.chips).reduce((a,b)=>a+b,0); }
+function paintChips(){
+  const left=chipsLeft(), body=$('bet-card');
+  for(const lid in bet.chips){
+    const c=bet.chips[lid];
+    body.querySelector('[data-seg="'+lid+'"]').style.width=c+'%';
+    body.querySelector('[data-chips="'+lid+'"]').textContent=c;
+    body.querySelectorAll('[data-l="'+lid+'"]').forEach(b=>{ b.disabled = +b.dataset.d>0 ? left<=0 : c<=0; });
+    body.querySelector('[data-all="'+lid+'"]').disabled = c===CHIPS;
+  }
+  const cl=$('chips-left');
+  cl.textContent = left===0 ? 'ALL 100 CHIPS PLACED' : left+' CHIP'+(left===1?'':'S')+' LEFT TO PLACE';
+  cl.parentNode.classList.toggle('full', left===0);
+  $('undo-allin').hidden = !bet.undo;
+  $('lock-btn').disabled = left!==0;
+}
+function moveChips(lid, d){
+  bet.undo=null;
+  if(d>0) bet.chips[lid] += Math.min(d, chipsLeft());
+  else bet.chips[lid] = Math.max(0, bet.chips[lid]+d);
+  paintChips();
+}
+function allIn(lid){
+  const before=Object.assign({}, bet.chips);
+  for(const k in bet.chips) bet.chips[k]=0;
+  bet.chips[lid]=CHIPS; bet.undo=before;
+  paintChips();
+}
+function undoAllIn(){ if(!bet.undo) return; bet.chips=bet.undo; bet.undo=null; paintChips(); }
+function lockIn(){
+  if(chipsLeft()!==0) return;
+  if(!bet.asked && !bet.nudged){ bet.nudged=true; $('lock-nudge').style.display='block'; $('lock-btn').scrollIntoView({block:'nearest'}); return; }
+  const r=R(), s=scoreRound(player.round, bet.chips);
+  player.score += s.payout;
+  player.history.push({ round:player.round, chips:Object.assign({}, bet.chips), asked:bet.asked,
+    askLabel: bet.asked ? r.asks[bet.asked].label : null, share:s.share, payout:s.payout });
+  renderResult();
+}
+
+// ----- the reveal -----
+function botRows(i){
+  return DATA.bots.map(b=>({ name:b.name, sub:b.desc, chips:ROUNDS[i].bots[b.id], payout:scoreRound(i, ROUNDS[i].bots[b.id]).payout }));
+}
+function renderResult(){
+  const r=R(), rv=r.reveal, h=player.history[player.history.length-1], last=player.round>=TOTAL_ROUNDS-1;
+  const rows=[{ you:true, name:'You', sub: h.askLabel ? 'asked: '+h.askLabel : 'asked nothing', chips:h.chips, payout:h.payout }]
+    .concat(botRows(player.round)).sort((a,b)=>b.payout-a.payout);
+  $('result-body').innerHTML = statusHTML(' · REVEAL')
+    + '<div class="card center"><div class="q-label">'+h.share+' OF YOUR 100 CHIPS ON THE REAL PROBLEM</div>'
+    +   '<div class="big-num '+signCls(h.payout)+'">'+fmtDelta(h.payout)+' pts</div>'
+    +   '<div class="muted" style="font-size:.84rem;">'+(h.askLabel ? 'You asked: '+esc(h.askLabel) : 'You asked nothing')+'</div></div>'
+    + '<div class="card"><h3>'+esc(rv.room_title.replace('THE CLASS','YOU AND THE BOTS'))+'</h3>'
+    +   rows.map(x=>'<div class="rm-row'+(x.you?' you':'')+'"><div class="n">'+esc(x.name)+'<small>'+esc(x.sub)+'</small></div>'
+          +stripHTML(r.layers, x.chips, rv.right)+'<div class="amt '+signCls(x.payout)+'">'+fmtDelta(x.payout)+'</div></div>').join('')
+    +   keyHTML(rv)+'<div class="answer-line">'+esc(rv.answer+' · ALL IN PAYS '+rv.all_in)+'</div></div>'
+    + '<div class="card"><h3>'+esc(r.statement_title)+' · with the normal ranges</h3>'+statementHTML(r.statement, rv.marks)+'</div>'
+    + '<div class="card">'+whyHTML(rv)+'</div>'
+    + '<div class="center"><button class="primary" onclick="nextRound()">'+(last?'SEE YOUR RESULTS →':'NEXT ROUND →')+'</button></div>';
+  showScreen('screen-result');
+}
+function nextRound(){
+  player.round++;
+  if(player.round>=TOTAL_ROUNDS){ renderFinal(); return; }
+  if(player.round===DATA.part_two_at){ renderPartTwo(); return; }
+  renderRound();
+}
+
+// ----- part two: the P&L -----
+function renderPartTwo(){
+  const p=DATA.part_two;
+  $('part-body').innerHTML =
+      '<div class="hero"><div class="the">'+esc(p.kicker)+'</div><h1><span class="hl">'+esc(p.title)+'</span></h1>'
+    +   '<div class="badge">SCORE '+esc(fmtPts(player.score).toUpperCase())+' AFTER PART ONE</div>'
+    +   '<div class="lede" style="max-width:44ch;font-size:.95rem;">'+esc(p.subtitle)+'</div></div>'
+    + '<div class="card" style="margin-top:22px;"><h3>How part two works</h3><div class="part-cols"><ul class="intro-rules">'
+    +   DATA.rules.pl.map(t=>'<li>'+t+'</li>').join('')+'</ul>'+PART_PIC+'</div></div>'
+    + '<div class="center"><button class="primary" onclick="renderRound()">START ROUND '+(player.round+1)+' →</button></div>';
+  showScreen('screen-part');
+}
+
+// ----- final -----
+function standings(){
+  const mine={ you:true, name:player.name||'You', sub:'', total:player.score,
+    avg: Math.round(player.history.reduce((s,h)=>s+h.share,0)/TOTAL_ROUNDS),
+    allin: player.history.filter(h=>h.share===CHIPS).length };
+  const bots=DATA.bots.map(b=>{
+    let total=0, share=0, allin=0;
+    ROUNDS.forEach((r,i)=>{ const c=r.bots[b.id], s=scoreRound(i,c); total+=s.payout; share+=s.share; if(s.share===CHIPS) allin++; });
+    return { name:b.name, sub:b.desc, total, avg:Math.round(share/TOTAL_ROUNDS), allin };
+  });
+  return [mine].concat(bots).sort((a,b)=>b.total-a.total);
+}
+function renderFinal(){
+  const rows=standings(), me=rows.find(x=>x.you);
+  const board='<div class="board-scroll"><table class="board"><tr><th>#</th><th>PLAYER</th><th>AVG CHIPS ON THE REAL PROBLEM</th><th class="opt">ROUNDS ALL IN AND RIGHT</th><th>TOTAL</th></tr>'
+    + rows.map((x,i)=>'<tr'+(x.you?' class="you"':'')+'><td class="num">'+(i+1)+'</td><td>'+esc(x.name)+(x.you?' (you)':'')+(x.sub?'<small>'+esc(x.sub)+'</small>':'')+'</td>'
+        +'<td class="num">'+x.avg+' of 100</td><td class="num opt">'+x.allin+' of '+TOTAL_ROUNDS+'</td><td class="num">'+esc(fmtPts(x.total))+'</td></tr>').join('')
+    + '</table></div>';
+  const recap=player.history.map(h=>{
+    const r=ROUNDS[h.round];
+    return '<div class="history-row"><span class="hist-round">R'+(h.round+1)+'</span><span class="hist-model">'+esc(r.title)
+      +'<br><small>'+h.share+' of 100 on the real problem · '+(h.askLabel ? 'asked: '+esc(h.askLabel) : 'asked nothing')+'</small></span>'
+      +'<span class="hist-rev '+signCls(h.payout)+'">'+fmtDelta(h.payout)+'</span></div>';
+  }).join('');
+  $('final-body').innerHTML =
+      '<div class="hero" style="padding-top:20px;"><h1 style="font-size:2rem;">That\'s the eight 🏟️</h1></div>'
+    + '<div class="card"><div class="bignum"><div class="n">'+esc(fmtPts(player.score))+'</div>'
+    +   '<div class="l">of '+DATA.max_total+' possible · on average '+me.avg+' of your 100 chips sat on the real problem</div></div></div>'
+    + '<div class="card"><h3>You and the bots</h3>'+board+'</div>'
+    + '<div class="card"><h3>Round by round</h3>'+recap+'</div>'
+    + '<div class="card"><h3>What just happened</h3><div style="padding-top:8px;">'+DATA.debrief.map((t,i)=>'<div class="insight"><div class="num">'+(i+1)+'</div><p>'+esc(t)+'</p></div>').join('')+'</div></div>'
+    + '<div class="center"><button class="primary" onclick="showScreen(\'screen-reflect\')">Reflect &amp; finish →</button></div>';
+  showScreen('screen-final');
+}
+
+// ----- reflection + email -----
+function buildPayload(){
+  const rows=standings(), me=rows.find(x=>x.you);
+  const asked=player.history.filter(h=>h.asked).length;
+  const summary=[
+    'Final score: '+player.score+' of '+DATA.max_total+' points over '+TOTAL_ROUNDS+' rounds.',
+    'Average chips on the real problem: '+me.avg+' of 100. Rounds all in and right: '+me.allin+' of '+TOTAL_ROUNDS+'. Questions asked: '+asked+' of '+TOTAL_ROUNDS+'.',
+    'Bots: '+rows.filter(x=>!x.you).map(x=>x.name+' '+x.total).join(' · ')+'.',
+  ].concat(player.history.map(h=>{
+    const r=ROUNDS[h.round];
+    return 'R'+(h.round+1)+' '+r.name+': asked '+(h.askLabel||'nothing')+'; chips '
+      + r.layers.map(l=>(l.short||l.name)+' '+h.chips[l.id]).join(' / ')
+      + '; '+h.share+' on the real problem ('+r.reveal.key.find(k=>k.right).name+'); '+fmtDelta(h.payout)+' pts';
+  })).join('\n');
+  return {
+    submitter: player.name,
+    student_name: player.name,
+    student_email: player.email,
+    game_name: GAME_NAME,
+    game_summary: summary,
+    confidence: $('ref-confidence').value + '/10',
+    takeaway: $('ref-takeaway').value.trim(),
+    application: $('ref-application').value.trim(),
+    surprise: $('ref-surprise').value.trim(),
+    other: $('ref-other').value.trim() || '(none)',
+    final_score: String(player.score),
+    avg_chips_on_real_problem: me.avg + ' of 100',
+    questions_asked: asked + ' of ' + TOTAL_ROUNDS,
+  };
+}
+// If a send fails, the answers stay in this browser and the player is told, instead
+// of a silent "All done".
+function dmbaStashFailedSubmission(payload, err) {
+  console.error('Email send failed:', err);
+  try {
+    var key = 'dmba_failed_submissions';
+    var queue = JSON.parse(localStorage.getItem(key) || '[]');
+    queue.push({ at: new Date().toISOString(), payload: payload });
+    localStorage.setItem(key, JSON.stringify(queue));
+  } catch (e) { /* private browsing - the on-screen notice still shows */ }
+  dmbaWarnSendFailed();
+}
+function dmbaWarnSendFailed() {
+  if (document.getElementById('dmba-send-warning')) return;
+  var note = document.createElement('p');
+  note.id = 'dmba-send-warning';
+  note.setAttribute('role', 'alert');
+  note.style.cssText = 'margin:16px auto;max-width:56ch;padding:12px 14px;' +
+    'border-radius:8px;background:#FBEEDA;border:1px solid #C89A3C;' +
+    'color:#5A3E06;font-size:14px;line-height:1.5;text-align:left';
+  note.textContent = "We couldn't send this to the d.MBA team just now. Your answers " +
+    "are saved in this browser. Please email admin@d.mba so we can record your " +
+    "submission, or come back to this page and submit again.";
+  var host = document.getElementById('ref-success')
+          || document.getElementById('screen-success')
+          || document.body;
+  host.appendChild(note);
+}
+function submitReflection(){
+  const t=$('ref-takeaway').value.trim(), a=$('ref-application').value.trim(), s=$('ref-surprise').value.trim();
+  if(!t||!a||!s){ $('ref-error').style.display='block'; return; }
+  $('ref-error').style.display='none';
+  const payload=buildPayload();
+  const btn=$('ref-submit-btn'); btn.disabled=true; btn.textContent='Sending…';
+  try {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    Promise.allSettled([
+      emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_ADMIN_TEMPLATE,{...payload,to_email:ADMIN_EMAIL}),
+      emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_CONFIRM_TEMPLATE,{...payload,to_email:player.email}),
+    ]).then(results=>{
+      const failed=results.filter(r=>r.status==='rejected');
+      if(failed.length) dmbaStashFailedSubmission(payload, failed[0].reason);
+      showSuccess();
+    });
+  } catch(e) {
+    dmbaStashFailedSubmission(payload, e);
+    showSuccess();
+  }
+}
+function showSuccess(){ $('ref-confirm-email').textContent=player.email; showScreen('screen-success'); }
+function playAgain(){ location.reload(); }
+
+// ===================== WIRING =====================
+// Round controls are re-rendered often, so they are handled by delegation.
+document.addEventListener('click', e=>{
+  const t=e.target; if(!t || !t.closest) return;
+  const q=t.closest('.choice[data-q]'); if(q){ pickQuestion(q.dataset.q); return; }
+  const d=t.closest('button[data-d]'); if(d){ moveChips(d.dataset.l, +d.dataset.d); return; }
+  const a=t.closest('button[data-all]'); if(a){ allIn(a.dataset.all); return; }
+  if(t.closest('#undo-allin')) undoAllIn();
+});
+// Enter or Space presses anything that is clickable but not a real button.
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Enter' && e.key!==' ') return;
+  const el=e.target;
+  if(!el || !el.matches || !el.matches('.link[tabindex], .choice[tabindex]')) return;
+  e.preventDefault(); el.click();
+});
+// definitions tooltip: hover, tap or focus a dotted term
+(function wireTips(){
+  const tip=$('tip');
+  const place=(x,y)=>{ const w=tip.offsetWidth, h=tip.offsetHeight;
+    const l=Math.min(window.innerWidth-w-8, Math.max(8, x+12)); let t=y+16; if(t+h>window.innerHeight-8) t=y-h-12;
+    tip.style.left=l+'px'; tip.style.top=t+'px'; };
+  const show=(el,x,y)=>{ const d=DEFS[el.dataset.def]; if(!d) return;
+    tip.innerHTML='<b>'+esc(d[0])+'</b>'+esc(d[1]); tip.style.display='block'; place(x,y); };
+  const hit=e=>e.target && e.target.closest && e.target.closest('.def');
+  document.addEventListener('mouseover', e=>{ const el=hit(e); if(el) show(el, e.clientX, e.clientY); });
+  document.addEventListener('mousemove', e=>{ if(tip.style.display==='block' && hit(e)) place(e.clientX, e.clientY); });
+  document.addEventListener('mouseout', e=>{ if(hit(e)) tip.style.display='none'; });
+  document.addEventListener('click', e=>{ const el=hit(e); if(el) show(el, e.clientX, e.clientY); else tip.style.display='none'; });
+  document.addEventListener('focusin', e=>{ const el=hit(e); if(el && el.matches(':focus-visible')){ const b=el.getBoundingClientRect(); show(el, b.left, b.bottom-12); } });
+  document.addEventListener('focusout', e=>{ if(hit(e)) tip.style.display='none'; });
+  window.addEventListener('scroll', ()=>{ tip.style.display='none'; }, {passive:true});
+})();
+</script>
+</body>
+</html>
